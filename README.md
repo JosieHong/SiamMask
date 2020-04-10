@@ -28,7 +28,6 @@ If you find this code useful, please consider citing:
 }
 ```
 
-
 ## Contents
 1. [Environment Setup](#environment-setup)
 2. [Demo](#demo)
