@@ -34,7 +34,7 @@ If you find this code useful, please consider citing:
 2. [Demo](#demo)
 3. [Testing Models](#testing-models)
 4. [Training Models](#training-models)
-5. [Train and Testing on Your Own Dataset](#Train and Testing on Your Own Dataset)
+5. [Train and Testing on Your Own Dataset](#Train-and-Testing-on-Your-Own-Dataset)
 
 ## Environment setup
 
@@ -248,9 +248,13 @@ cd SiamMask
 export SiamMask=$PWD
 mkdir demo
 
-python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth --config ./experiments/siammask_sharp/config_davis.json --base_path ./data/SegTrackv2/JPEGImages/parachute
+python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth \
+--config ./experiments/siammask_sharp/config_davis.json \
+--base_path ./data/SegTrackv2/JPEGImages/parachute
 
-python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth --config ./experiments/siammask_sharp/config_davis.json --base_path ./data/tennis
+python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth \
+--config ./experiments/siammask_sharp/config_davis.json \
+--base_path ./data/tennis
 ```
 
 ![demo](./img/demo.gif)
