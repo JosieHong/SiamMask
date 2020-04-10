@@ -4,7 +4,11 @@
 # Written by Qiang Wang (wangqiang2015 at ia.ac.cn)
 # --------------------------------------------------------
 import glob
+import os
+import sys
+sys.path.append(os.getcwd())
 from tools.test import *
+sys.path.append(os.path.join(os.getcwd(), "experiments", "siammask_sharp"))
 
 parser = argparse.ArgumentParser(description='PyTorch Tracking Demo')
 
@@ -33,9 +37,12 @@ if __name__ == '__main__':
 
     # Parse Image file
     img_files = sorted(glob.glob(join(args.base_path, '*.jp*')))
+    if len(img_files) == 0:
+        img_files = sorted(glob.glob(join(args.base_path, '*.png')))
     ims = [cv2.imread(imf) for imf in img_files]
 
     # Select ROI
+    # josie.notshow
     cv2.namedWindow("SiamMask", cv2.WND_PROP_FULLSCREEN)
     # cv2.setWindowProperty("SiamMask", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     try:
@@ -58,10 +65,15 @@ if __name__ == '__main__':
 
             im[:, :, 2] = (mask > 0) * 255 + (mask == 0) * im[:, :, 2]
             cv2.polylines(im, [np.int0(location).reshape((-1, 1, 2))], True, (0, 255, 0), 3)
+            # josie.save
+            cv2.imwrite('./demo/{}.png'.format(str(f).zfill(5)), im)
+            print("save ./demo/{}.png".format(str(f).zfill(5)))
+
             cv2.imshow('SiamMask', im)
             key = cv2.waitKey(1)
             if key > 0:
                 break
+            
 
         toc += cv2.getTickCount() - tic
     toc /= cv2.getTickFrequency()

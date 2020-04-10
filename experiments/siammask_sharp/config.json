@@ -21,16 +21,11 @@
     },
     "train_datasets": {
         "datasets": {
-            "ytb_vos": {
-                "root": "../../data/ytb_vos/crop511",
-                "anno": "../../data/ytb_vos/train.json",
+            "segtrack": {
+                "root": "../../data/SegTrackv2/crop511",
+                "anno": "../../data/SegTrackv2/train.json",
                 "num_use": 100000,
                 "frame_range": 20
-            },
-            "coco": {
-                "root": "../../data/coco/crop511",
-                "anno": "../../data/coco/train2017.json",
-                "frame_range": 1
             }
         },
         "template_size": 127,

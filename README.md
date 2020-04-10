@@ -1,7 +1,6 @@
-# SiamMask
+# SiamMask on Your Own Dataset
 
-**NEW:** now including code for both training and inference!
-
+**Update:** An easy way to training and testing SiamMask on your own dataset (e.g. [SegTrack v2 Dataset](https://web.engr.oregonstate.edu/~lif/SegTrack2/dataset.html))
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/fast-online-object-tracking-and-segmentation/visual-object-tracking-vot201718)](https://paperswithcode.com/sota/visual-object-tracking-vot201718?p=fast-online-object-tracking-and-segmentation)
 
@@ -35,20 +34,29 @@ If you find this code useful, please consider citing:
 2. [Demo](#demo)
 3. [Testing Models](#testing-models)
 4. [Training Models](#training-models)
+5. [Train and Testing on Your Own Dataset](#Train and Testing on Your Own Dataset)
 
 ## Environment setup
+
 This code has been tested on Ubuntu 16.04, Python 3.6, Pytorch 0.4.1, CUDA 9.2, RTX 2080 GPUs
 
 - Clone the repository 
-```
+```shell
 git clone https://github.com/foolwood/SiamMask.git && cd SiamMask
 export SiamMask=$PWD
 ```
 - Setup python environment
-```
+```shell
 conda create -n siammask python=3.6
 source activate siammask
 pip install -r requirements.txt
+
+# update
+# install the newest pytorch from https://pytorch.org/
+# match opencv and numpy
+pip install opencv-python==4.2.0.32
+(python -m pip install opencv-python==4.2.0.32)
+
 bash make.sh
 ```
 - Add the project to your PYTHONPATH
@@ -193,6 +201,85 @@ bash test_all.sh -h
 bash test_all.sh -s 1 -e 20 -d VOT2018 -g 4
 ```
 
+## Train and Testing on Your Own Dataset
+
+Here we take [SegTrack v2 Dataset](https://web.engr.oregonstate.edu/~lif/SegTrack2/dataset.html) as an example. 
+
+### Download the dataset & Organize it as following
+
+1. Make the `Annotations` files. (Mask should be organized in `Annotations` as **PIL mode 'P'**, which translates pixels through the palette.)
+2. Label `meta.json` manually.
+3. Crop & Generate data info. 
+
+The steps for SegTrack v2 Dataset can be seen at [/data/SegTrackv2/readme.md](/data/SegTrackv2/readme.md).
+
+```
+|_Annotations
+|  |_bird_of_paradise
+|  |_...
+|  |_worm
+|_Code
+|_crop511
+|  |_bird_of_paradise
+|  |_...
+|  |_worm
+|_GroundTruth
+|_ImageSets
+|_JPEGImages
+|  |_bird_of_paradise
+|  |_...
+|  |_worm
+|_meta.json
+|_instances_train.json
+|_instances_val.json
+|_train.json
+```
+
+### Rewrite API to your own dataset
+
+At `./utils/benchmark_helper.py`, load your own dataset. 
+
+### Demo on your own dataset
+
+Change the parameter `--base_path` to your own dataset. 
+
+```shell
+cd SiamMask
+export SiamMask=$PWD
+mkdir demo
+
+python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth --config ./experiments/siammask_sharp/config_davis.json --base_path ./data/SegTrackv2/JPEGImages/parachute
+
+python ./tools/demo.py --resume ./experiments/siammask_sharp/SiamMask_SegTrack.pth --config ./experiments/siammask_sharp/config_davis.json --base_path ./data/tennis
+```
+
+![demo](./img/demo.gif)
+
+### Testing & Training
+
+For testing and training the refinement model, change the **third parameter**  to your own dataset. Also, add your configure in `./experiments/siammask_sharp/config.json`. 
+
+```shell
+cd ./experiments/siammask_sharp
+
+# tesing
+bash test_mask_refine.sh config_davis.json SiamMask_DAVIS.pth SegTrackv2 0
+
+# training the refinement mode
+bash tune.sh SiamMask_SegTrack.pth SegTrackv2 0
+```
+
+### Results
+
+```
+[2020-04-07 12:27:23,375-rk0-test.py#609] Segmentation Threshold 0.30 mIoU: 0.655
+[2020-04-07 12:27:23,375-rk0-test.py#609] Segmentation Threshold 0.35 mIoU: 0.649
+[2020-04-07 12:27:23,375-rk0-test.py#609] Segmentation Threshold 0.40 mIoU: 0.640
+[2020-04-07 12:27:23,375-rk0-test.py#609] Segmentation Threshold 0.45 mIoU: 0.629
+[2020-04-07 12:27:23,375-rk0-test.py#613] Mean Speed: 36.92 FPS
+```
+
 ## License
+
 Licensed under an MIT license.
 

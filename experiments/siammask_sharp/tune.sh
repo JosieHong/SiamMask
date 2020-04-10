@@ -8,7 +8,7 @@ fi
 which python
 
 ROOT=`git rev-parse --show-toplevel`
-source activate siammask
+# source activate siammask
 export PYTHONPATH=$ROOT:$PYTHONPATH
 export PYTHONPATH=$PWD:$PYTHONPATH
 
@@ -18,8 +18,8 @@ model=$1
 dataset=$2
 id=$3
 
-CUDA_VISIBLE_DEVICES=$id python -u $ROOT/tools/tune_vot.py\
-    --config config_vot18.json \
+CUDA_VISIBLE_DEVICES=$id python -u $ROOT/tools/tune_vos.py\
+    --config config_davis.json \
     --dataset $dataset \
     --penalty-k 0.08,0.13,0.01 \
     --window-influence 0.38,0.44,0.01 \

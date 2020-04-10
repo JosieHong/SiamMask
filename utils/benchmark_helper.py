@@ -20,10 +20,13 @@ def get_dataset_zoo():
         y = join(root, x)
         if not isdir(y): return False
 
+        # josie.2020.3.26
         return exists(join(y, 'list.txt')) \
                or exists(join(y, 'train', 'meta.json')) \
                or exists(join(y, 'ImageSets', '2016', 'val.txt')) \
-               or exists(join(y, 'ImageSets', '2017', 'test-dev.txt'))
+               or exists(join(y, 'ImageSets', '2017', 'test-dev.txt'))\
+               or exists(join(y, 'ImageSets', 'all.txt'))
+        # ---------------
 
     zoos = list(filter(valid, zoos))
     return zoos
@@ -65,6 +68,25 @@ def load_dataset(dataset):
             info[video]['anno_files'] = sorted(glob.glob(join(base_path, 'Annotations/480p', video, '*.png')))
             info[video]['image_files'] = sorted(glob.glob(join(base_path, 'JPEGImages/480p', video, '*.jpg')))
             info[video]['name'] = video
+    # josie.2020.3.26
+    elif 'SegTrackv2' in dataset and 'TEST' not in dataset:
+        base_path = join(realpath(dirname(__file__)), '../data', 'SegTrackv2')
+        list_path = join(realpath(dirname(__file__)), '../data', 'SegTrackv2', 'ImageSets', 'all.txt')
+        videos = open(list_path, 'r').readlines()
+        # josie.debug
+        # print(videos)
+        for video in videos:
+            info[video] = {}
+            info[video]['anno_files'] = sorted(glob.glob(join(base_path, 'Annotations', video[1:-1], '*.png')))
+            info[video]['image_files'] = sorted(glob.glob(join(base_path, 'JPEGImages', video[1:-1], '*.png')))
+            info[video]['name'] = video[1:-1]
+            # josie.debug
+            if len(info[video]['anno_files']) != len(info[video]['image_files']):
+                print("Error load files!")
+                print("{}: \nanno_files: {}\nimage_files: {}\n".format(video[1:-1], \
+                        len(info[video]['anno_files']), len(info[video]['image_files'])))
+        # exit()
+    # ---------------
     elif 'ytb_vos' in dataset:
         base_path = join(realpath(dirname(__file__)), '../data', 'ytb_vos', 'valid')
         json_path = join(realpath(dirname(__file__)), '../data', 'ytb_vos', 'valid', 'meta.json')

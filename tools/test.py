@@ -459,6 +459,10 @@ def MultiBatchIouMeter(thrs, outputs, targets, start=None, end=None):
 def track_vos(model, video, hp=None, mask_enable=False, refine_enable=False, mot_enable=False, device='cpu'):
     image_files = video['image_files']
 
+    # josie.debug
+    # print(video['anno_files'][0])
+    # img_debug = Image.open(video['anno_files'][0])
+    # print('debug: {}\n{}'.format(img_debug.size, img_debug.mode))
     annos = [np.array(Image.open(x)) for x in video['anno_files']]
     if 'anno_init_files' in video:
         annos_init = [np.array(Image.open(x)) for x in video['anno_init_files']]
@@ -491,6 +495,8 @@ def track_vos(model, video, hp=None, mask_enable=False, refine_enable=False, mot
             tic = cv2.getTickCount()
             if f == start_frame:  # init
                 mask = annos_init[obj_id] == o_id
+                # josie.debug
+                # print("img.shape: {}".format((mask).astype(np.uint8).shape))
                 x, y, w, h = cv2.boundingRect((mask).astype(np.uint8))
                 cx, cy = x + w/2, y + h/2
                 target_pos = np.array([cx, cy])
@@ -571,7 +577,7 @@ def main():
     dataset = load_dataset(args.dataset)
 
     # VOS or VOT?
-    if args.dataset in ['DAVIS2016', 'DAVIS2017', 'ytb_vos'] and args.mask:
+    if args.dataset in ['DAVIS2016', 'DAVIS2017', 'ytb_vos', 'SegTrackv2'] and args.mask:
         vos_enable = True  # enable Mask output
     else:
         vos_enable = False
@@ -586,7 +592,7 @@ def main():
 
         if vos_enable:
             iou_list, speed = track_vos(model, dataset[video], cfg['hp'] if 'hp' in cfg.keys() else None,
-                                 args.mask, args.refine, args.dataset in ['DAVIS2017', 'ytb_vos'], device=device)
+                                 args.mask, args.refine, args.dataset in ['DAVIS2017', 'ytb_vos', 'SegTackv2'], device=device)
             iou_lists.append(iou_list)
         else:
             lost, speed = track_vot(model, dataset[video], cfg['hp'] if 'hp' in cfg.keys() else None,
@@ -596,6 +602,9 @@ def main():
 
     # report final result
     if vos_enable:
+        # josie.debug
+        # print("iou_lists: {}".format(iou_lists))
+        # print(np.concatenate(iou_lists))
         for thr, iou in zip(thrs, np.mean(np.concatenate(iou_lists), axis=0)):
             logger.info('Segmentation Threshold {:.2f} mIoU: {:.3f}'.format(thr, iou))
     else:
