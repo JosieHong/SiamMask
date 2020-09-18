@@ -51,10 +51,8 @@ source activate siammask
 pip install -r requirements.txt
 
 # update
-# install the newest pytorch from https://pytorch.org/
-# match opencv and numpy
-pip install opencv-python==4.2.0.32
-(python -m pip install opencv-python==4.2.0.32)
+# install the previous pytorch from https://pytorch.org/get-started/previous-versions/
+# e.g. conda install pytorch=0.4.1 cuda92 -c pytorch
 
 bash make.sh
 ```
